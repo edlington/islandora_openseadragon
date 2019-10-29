@@ -16,7 +16,15 @@ function islandora_openseadragon_download_clip(AbstractObject $object) {
     module_load_include('inc', 'islandora_openseadragon', 'includes/utilities');
     $clip_parts = islandora_openseadragon_construct_clip_url($_GET['clip'], TRUE);
     if ($clip_parts) {
-      $filename = $object->label;
+      $filename = strtolower($object->label);
+      $map = array(
+        '/\s/' => '_',
+        '/[\'\",\.\?\:\;\(\)\&\!]/' => '',
+      );
+      $filename = trim(preg_replace(array_keys($map), array_values($map), $filename));
+      if (strlen($filename) <= 0 || (strlen($filename) <= substr_count($filename, '_'))) {
+        $filename = 'download_clip_' . date('Ymd');
+      }
       header("Content-Disposition: attachment; filename=\"{$filename}.jpg\"");
       header("Content-type: image/jpeg");
       header("Content-Transfer-Encoding: binary");
