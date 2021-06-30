@@ -70,7 +70,15 @@ function islandora_openseadragon_construct_clip_url($params, $download = FALSE) 
     $path = parse_url($rft_id, PHP_URL_PATH);
     // Replace the first left-most slash to get a more Drupal-y path to validate
     // against.
-    $drupal_path = preg_replace('/\//', '', $path, 1);
+    //Commented out June 30, 2021 
+    //$drupal_path = preg_replace('/\//', '', $path, 1);
+    //code immediately below replaces code on line 74
+    //fixes issue described here:
+    //https://github.com/Islandora/islandora_openseadragon/pull/67/files/e0b6712c87022edb7efe573bf521e4c0573cf91c#diff-28dc8af6e01241f4cc9d09f1c86eeec15dbd094d32e260b4f099ef8d9e9b46d0
+    if (base_path() !== '/') {
+     $path = substr($path, strlen(base_path()) - 1);
+    }
+    
     $item = menu_get_item($drupal_path);
     if (!$item || $item['path'] !== 'islandora/object/%/datastream/%/view') {
       return FALSE;
